@@ -8,6 +8,9 @@ import (
 	"strings"
 )
 
+// $ awk '{ if (NF == 0) next; if (/^[a-z]$/) { if (NR > 1) printf "},\n"; printf "\t\047%s\047: {", $0; getline; gsub(/\|$/, ""); printf "\042%s\042", $0; getline; gsub(/\|$/, ""); printf ", \042%s\042", $0; getline; gsub(/\|$/, ""); printf ", \042%s\042", $0 } } END { print "}" }' calvin.txt
+
+
 var boxFont = map[rune][]string{
   'a': {"┌─┐", "├─┤", "┴ ┴"},
 	'b': {"┌┐ ", "├┴┐", "└─┘"},
