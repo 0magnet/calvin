@@ -22,7 +22,7 @@ import (
 )
 
 func main() {
-		println(calvin.AsciiFont("Hello, World!"))
+	println(calvin.AsciiFont("Hello, World!"))
 }
 
 ```
