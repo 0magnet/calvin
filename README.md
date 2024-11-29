@@ -5,7 +5,7 @@ convert text to Calvin S ascii font (https://patorjk.com/software/taag/#p=displa
 example:
 
 ```
-$ $ echo "Hello, World!" | go run cmd/calvin/calvin.go
+$ echo "Hello, World!" | go run cmd/calvin/calvin.go
 ╦ ╦ ┌─┐┬  ┬  ┌─┐   ╦ ╦ ┌─┐┬─┐┬  ┌┬┐┬    
 ╠═╣ ├┤ │  │  │ │   ║║║ │ │├┬┘│   │││    
 ╩ ╩ └─┘┴─┘┴─┘└─┘┘  ╚╩╝ └─┘┴└─┴─┘─┴┘o    
