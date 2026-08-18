@@ -56,19 +56,39 @@ func TestAsciiFontTabs(t *testing.T) {
 	}
 }
 
-func TestAsciiFontDigitsAndBrackets(t *testing.T) {
-	for _, ch := range `0123456789[]():;'"/\` {
-		glyph, ok := boxFont[ch]
-		if !ok {
-			t.Errorf("no glyph for %q", ch)
-			continue
-		}
-		if len(glyph) != glyphRows {
-			t.Errorf("glyph %q has %d rows, want %d", ch, len(glyph), glyphRows)
+// The font now covers every printable ASCII character, so anything typeable
+// renders rather than silently vanishing. Upstream Calvin S stops at the
+// letters and a handful of symbols; the rest are this port's extension.
+func TestPrintableASCIIIsComplete(t *testing.T) {
+	for ch := rune(' '); ch <= '~'; ch++ {
+		if _, ok := boxFont[ch]; !ok {
+			t.Errorf("no glyph for %q (0x%02x)", ch, ch)
 		}
 	}
 	if AsciiFont("2026") == "" {
 		t.Error("digits rendered as nothing")
+	}
+	// A whole line of symbols must survive intact, not collapse to blanks.
+	if strings.TrimSpace(AsciiFont(`~/.cache | grep -c "x" > n & echo $?`)) == "" {
+		t.Error("a line of symbols rendered as nothing")
+	}
+}
+
+// Characters that are distinct when typed must stay distinct when rendered,
+// or the output is ambiguous to read back.
+func TestGlyphsAreDistinct(t *testing.T) {
+	seen := make(map[string]rune, len(boxFont))
+	for ch := rune(' '); ch <= '~'; ch++ {
+		glyph, ok := boxFont[ch]
+		if !ok {
+			continue
+		}
+		key := strings.Join(glyph, "\n")
+		if prev, dup := seen[key]; dup {
+			t.Errorf("%q and %q render identically:\n%s", prev, ch, key)
+			continue
+		}
+		seen[key] = ch
 	}
 }
 

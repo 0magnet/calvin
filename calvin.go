@@ -107,6 +107,26 @@ var boxFont = map[rune][]string{
 	'"':  {`││`, `  `, `  `},
 	'/':  {`  /`, ` / `, `/  `},
 	'\\': {`\  `, ` \ `, `  \`},
+
+	// Braces are the brackets plus a notch: ┤ juts left, ├ juts right. Two
+	// columns wide, so { lines up with the [ it has to sit beside.
+	'{': {`┌─`, `┤ `, `└─`},
+	'}': {`─┐`, ` ├`, `─┘`},
+	'|': {`│`, `│`, `│`},
+
+	// Both sit on the middle row, where - already lives. = takes the double
+	// line the capitals use, which is what an equals sign is anyway.
+	'+': {`   `, `─┼─`, `   `},
+	'=': {`   `, `═══`, `   `},
+
+	// Diagonals stepped into right angles, the way v and x already are. The
+	// open third column mirrors how c and e are drawn.
+	'<': {` ┌─`, `┌┘ `, `└──`},
+	'>': {`─┐ `, ` └┐`, `──┘`},
+	'~': {`    `, `┌─┐ `, `  └┘`},
+
+	// ' is an upright tick, so ` leans, as / and \ do.
+	'`': {`\ `, `  `, `  `},
 }
 
 // glyphRows is the height of every glyph in the font.
