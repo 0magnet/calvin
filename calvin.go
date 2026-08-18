@@ -76,22 +76,69 @@ var boxFont = map[rune][]string{
 	',': {` `, ` `, `┘`},
 	'.': {` `, ` `, `o`},
 	'?': {`┌─┐`, ` ┌┘`, ` o `},
+	'[': {`┌─`, `│ `, `└─`},
+	']': {`─┐`, ` │`, `─┘`},
 	' ': {`  `, `  `, `  `},
+
+	// Digits are an extension: Calvin S itself defines no glyphs for 0-9, so
+	// patorjk.com/software/taag renders them as nothing. These follow the
+	// font's lowercase style — light box-drawing, three rows, three columns —
+	// and are shaped to stay distinct from the letters they most resemble:
+	// 0 is slashed so it does not read as o, 8 closes its lower bowl where a
+	// has feet, and 2 keeps a flat base against z's closed one.
+	'0': {`┌─┐`, `│┼│`, `└─┘`},
+	'1': {`┌┐ `, ` │ `, `─┴─`},
+	'2': {`┌─┐`, ` ┌┘`, `└──`},
+	'3': {`┌─┐`, ` ─┤`, `└─┘`},
+	'4': {`┬ ┬`, `└─┤`, `  ┴`},
+	'5': {`┌──`, `└─┐`, `└─┘`},
+	'6': {`┌─ `, `├─┐`, `└─┘`},
+	'7': {`──┐`, ` ┌┘`, ` ┴ `},
+	'8': {`┌─┐`, `├─┤`, `└─┘`},
+	'9': {`┌─┐`, `└─┤`, ` ─┘`},
 }
 
-// ConvertToBoxFont converts a lowercase string to box drawing characters.
-func AsciiFont(input string) string {
-	var output [3]string
+// glyphRows is the height of every glyph in the font.
+const glyphRows = 3
 
-	for _, char := range input {
-		if row, ok := boxFont[char]; ok {
-			for i := 0; i < len(row); i++ {
-				output[i] += row[i]
+// tabWidth is how many spaces a tab expands to before rendering, since the
+// font has no tab glyph.
+const tabWidth = 4
+
+// AsciiFont renders text in the Calvin S box-drawing font.
+//
+// Each line of the input becomes its own three-row block, so multi-line input
+// renders as multi-line output. Line endings may be "\n", "\r\n" or "\r", and
+// tabs expand to spaces. A single trailing newline is ignored, since piped
+// input almost always ends with one and would otherwise render an empty block.
+//
+// Characters the font does not define are skipped. That matches the reference
+// implementation at patorjk.com/software/taag — note in particular that
+// Calvin S defines no digits, so "2026" renders as nothing at all.
+func AsciiFont(input string) string {
+	input = strings.ReplaceAll(input, "\r\n", "\n")
+	input = strings.ReplaceAll(input, "\r", "\n")
+	input = strings.ReplaceAll(input, "\t", strings.Repeat(" ", tabWidth))
+	input = strings.TrimSuffix(input, "\n")
+
+	lines := strings.Split(input, "\n")
+	output := make([]string, 0, len(lines)*glyphRows)
+
+	for _, line := range lines {
+		var rows [glyphRows]string
+		for _, char := range line {
+			glyph, ok := boxFont[char]
+			if !ok {
+				continue
+			}
+			for i := range rows {
+				rows[i] += glyph[i]
 			}
 		}
+		output = append(output, rows[:]...)
 	}
 
-	return strings.Join(output[:], "\n")
+	return strings.Join(output, "\n")
 }
 
 var charMap = map[rune]string{
