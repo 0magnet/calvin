@@ -3,26 +3,29 @@ package commands
 
 import (
 	"bufio"
-	"strings"
 	"fmt"
-	"os"
-	"github.com/spf13/cobra"
 	"github.com/0magnet/calvin"
-
+	"github.com/spf13/cobra"
+	"os"
+	"strings"
 )
 
 // rootCmd represents the base command for the application
 var RootCmd = &cobra.Command{
 	Use:   "calvin",
 	Short: "generate calvin ascii font from text",
-	Long: ``,
+	Long:  ``,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		var input string
 
-		// Check if stdin has input
+		// Arguments win over stdin. Checking stdin first meant that whenever
+		// it was not a terminal — a script, a Makefile, CI — calvin ignored
+		// its arguments and blocked waiting for an EOF that never came.
 		stat, _ := os.Stdin.Stat()
-		if (stat.Mode() & os.ModeCharDevice) == 0 {
-			// Reading from stdin
+		switch {
+		case len(args) > 0:
+			input = strings.Join(args, " ")
+		case (stat.Mode() & os.ModeCharDevice) == 0:
 			scanner := bufio.NewScanner(os.Stdin)
 			var sb strings.Builder
 			for scanner.Scan() {
@@ -33,11 +36,7 @@ var RootCmd = &cobra.Command{
 				return fmt.Errorf("error reading stdin: %w", err)
 			}
 			input = sb.String()
-		} else if len(args) > 0 {
-			// Reading from command-line arguments
-			input = strings.Join(args, " ")
-		} else {
-			// No input provided
+		default:
 			return fmt.Errorf("no input provided; pipe text or pass as arguments")
 		}
 
