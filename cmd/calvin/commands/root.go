@@ -14,7 +14,7 @@ import (
 var RootCmd = &cobra.Command{
 	Use:   "calvin",
 	Short: "generate calvin ascii font from text",
-	Long:  ``,
+	Long:  calvin.AsciiFont("calvin") + "\ngenerate calvin ascii font from text",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		var input string
 
