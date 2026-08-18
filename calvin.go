@@ -84,18 +84,29 @@ var boxFont = map[rune][]string{
 	// patorjk.com/software/taag renders them as nothing. These follow the
 	// font's lowercase style — light box-drawing, three rows, three columns —
 	// and are shaped to stay distinct from the letters they most resemble:
-	// 0 is slashed so it does not read as o, 8 closes its lower bowl where a
+	// 0 is barred so it does not read as o, 8 closes its lower bowl where a
 	// has feet, and 2 keeps a flat base against z's closed one.
-	'0': {`┌─┐`, `│┼│`, `└─┘`},
-	'1': {`┌┐ `, ` │ `, `─┴─`},
-	'2': {`┌─┐`, ` ┌┘`, `└──`},
-	'3': {`┌─┐`, ` ─┤`, `└─┘`},
+	'0': {`┌─┐`, `│││`, `└─┘`},
+	'1': {` ┐ `, ` │ `, `─┴─`},
+	'2': {`┌─┐`, `┌─┘`, `└──`},
+	'3': {`┌─┐`, ` ─┤`, ` ─┘`},
 	'4': {`┬ ┬`, `└─┤`, `  ┴`},
 	'5': {`┌──`, `└─┐`, `└─┘`},
 	'6': {`┌─ `, `├─┐`, `└─┘`},
 	'7': {`──┐`, ` ┌┘`, ` ┴ `},
 	'8': {`┌─┐`, `├─┤`, `└─┘`},
 	'9': {`┌─┐`, `└─┤`, ` ─┘`},
+
+	// Punctuation the reference font also lacks, in the same spirit as the
+	// digits above. The slashes use ASCII, as ^ and * already do.
+	'(':  {`┌`, `│`, `└`},
+	')':  {`┐`, `│`, `┘`},
+	':':  {` `, `o`, `o`},
+	';':  {` `, `o`, `┘`},
+	'\'': {`│`, ` `, ` `},
+	'"':  {`││`, `  `, `  `},
+	'/':  {`  /`, ` / `, `/  `},
+	'\\': {`\  `, ` \ `, `  \`},
 }
 
 // glyphRows is the height of every glyph in the font.

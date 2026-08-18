@@ -57,7 +57,7 @@ func TestAsciiFontTabs(t *testing.T) {
 }
 
 func TestAsciiFontDigitsAndBrackets(t *testing.T) {
-	for _, ch := range "0123456789[]" {
+	for _, ch := range `0123456789[]():;'"/\` {
 		glyph, ok := boxFont[ch]
 		if !ok {
 			t.Errorf("no glyph for %q", ch)
@@ -103,5 +103,26 @@ func TestBlackboardBold(t *testing.T) {
 	// Unmapped runes, newlines included, pass through untouched.
 	if got, want := BlackboardBold("a\n!"), "𝕒\n!"; got != want {
 		t.Errorf("BlackboardBold = %q, want %q", got, want)
+	}
+}
+
+// A space is two columns wide, matching the reference font's two hardblanks.
+// Getting this wrong silently changes the spacing of every rendered string.
+func TestSpaceGlyph(t *testing.T) {
+	glyph, ok := boxFont[' ']
+	if !ok {
+		t.Fatal("no glyph for space")
+	}
+	for i, row := range glyph {
+		if row != "  " {
+			t.Errorf("space row %d = %q, want two spaces", i, row)
+		}
+	}
+	// A space must actually separate its neighbours.
+	if AsciiFont("a b") == AsciiFont("ab") {
+		t.Error("space did not separate the surrounding glyphs")
+	}
+	if got, want := AsciiFont("a  b"), AsciiFont("a b"); got == want {
+		t.Error("two spaces rendered the same as one")
 	}
 }
