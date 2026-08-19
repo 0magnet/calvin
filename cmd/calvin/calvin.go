@@ -6,6 +6,8 @@ convert text to ascii art
 package main
 
 import (
+	"os"
+
 	cc "github.com/ivanpirog/coloredcobra"
 	"github.com/spf13/cobra"
 
@@ -33,7 +35,9 @@ func main() {
 		NoExtraNewlines: true,
 		NoBottomNewline: true,
 	})
-	commands.RootCmd.Execute()
+	if err := commands.RootCmd.Execute(); err != nil {
+		os.Exit(1)
+	}
 }
 
 const help = "{{if .HasAvailableSubCommands}}{{end}} {{if gt (len .Aliases) 0}}\r\n\r\n" +

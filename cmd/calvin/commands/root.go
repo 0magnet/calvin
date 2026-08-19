@@ -21,11 +21,13 @@ var RootCmd = &cobra.Command{
 		// Arguments win over stdin. Checking stdin first meant that whenever
 		// it was not a terminal — a script, a Makefile, CI — calvin ignored
 		// its arguments and blocked waiting for an EOF that never came.
-		stat, _ := os.Stdin.Stat()
+		// A failure here means stdin cannot be described, which is treated the
+		// same as it not being a pipe: fall through to the argument.
+		stat, statErr := os.Stdin.Stat()
 		switch {
 		case len(args) > 0:
 			input = strings.Join(args, " ")
-		case (stat.Mode() & os.ModeCharDevice) == 0:
+		case statErr == nil && (stat.Mode()&os.ModeCharDevice) == 0:
 			scanner := bufio.NewScanner(os.Stdin)
 			var sb strings.Builder
 			for scanner.Scan() {

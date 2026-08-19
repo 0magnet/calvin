@@ -138,7 +138,7 @@ func TestSpaceGlyph(t *testing.T) {
 			t.Errorf("space row %d = %q, want two spaces", i, row)
 		}
 	}
-	// A space must actually separate its neighbours.
+	// A space must actually separate its neighbors.
 	if AsciiFont("a b") == AsciiFont("ab") {
 		t.Error("space did not separate the surrounding glyphs")
 	}
