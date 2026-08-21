@@ -1,0 +1,34 @@
+name: ci
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+# What this runs is what `make check` runs locally, so a green tick here and a
+# clean tree there mean the same thing. The Makefile is the single definition;
+# this file only supplies a machine to run it on.
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+      # make test, not go test ./...: it recurses into nested modules and falls
+      # back to the js/wasm tests under Node where nothing builds for the host,
+      # which is the whole of some of these repos.
+      - run: make test
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+      - name: install golangci-lint
+        run: curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b "$(go env GOPATH)/bin" v2.12.2
+      # Two passes inside make lint: the host config, then again with GOOS=js,
+      # because a host run cannot see //go:build js && wasm files at all.
+      - run: make lint
