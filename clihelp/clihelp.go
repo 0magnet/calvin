@@ -116,14 +116,23 @@ func BannerWith(name, text string) string {
 	return Banner(name) + "\n\n" + strings.TrimRight(text, "\n")
 }
 
-// Init gives cmd the house style: the banner as its Long, the blue coloring,
-// the shared templates, and the -b/-d flags. Call it on the root command after
-// its subcommands are attached, since the templates are inherited through the
-// parent chain and the flags are only meaningful at the root.
+// Init gives cmd the house style: the banner above whatever Long it already
+// had, the blue coloring, the shared templates, and the -b/-d flags. Call it on
+// the root command after its subcommands are attached, since the templates are
+// inherited through the parent chain and the flags are only meaningful at the
+// root.
+//
+// An existing Long is kept as prose under the build lines rather than replaced.
+// A command that has explained itself should not lose that explanation to gain
+// a banner, and every one of these trees had prose worth keeping.
 //
 // usage controls whether the "Usage:" line appears above the command listing.
 func Init(cmd *cobra.Command, name string, usage bool) {
-	cmd.Long = Banner(name)
+	if prose := strings.TrimSpace(cmd.Long); prose != "" {
+		cmd.Long = BannerWith(name, prose)
+	} else {
+		cmd.Long = Banner(name)
+	}
 	InitStyle(cmd, usage)
 	InitFlags(cmd)
 }

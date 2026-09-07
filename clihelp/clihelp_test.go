@@ -130,3 +130,27 @@ func TestHelpFlagIsHidden(t *testing.T) {
 		t.Error("--help is not hidden")
 	}
 }
+
+// A command that already explains itself keeps that explanation; the banner
+// goes above it rather than over it.
+func TestInitKeepsExistingLong(t *testing.T) {
+	cmd := &cobra.Command{Use: "thing", Long: "the prose that was already here"}
+	Init(cmd, "thing", false)
+	if !strings.Contains(cmd.Long, "the prose that was already here") {
+		t.Errorf("Init discarded the existing Long:\n%s", cmd.Long)
+	}
+	if !strings.Contains(cmd.Long, "built with go") {
+		t.Errorf("Init did not add the build block:\n%s", cmd.Long)
+	}
+	if strings.Index(cmd.Long, "built with go") > strings.Index(cmd.Long, "the prose") {
+		t.Error("the prose should come after the build block, not before")
+	}
+}
+
+func TestInitSetsBannerWhenLongIsEmpty(t *testing.T) {
+	cmd := &cobra.Command{Use: "thing"}
+	Init(cmd, "thing", false)
+	if !strings.Contains(cmd.Long, "built with go") {
+		t.Errorf("no banner set:\n%s", cmd.Long)
+	}
+}
