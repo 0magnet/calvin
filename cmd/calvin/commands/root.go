@@ -5,6 +5,7 @@ import (
 	"bufio"
 	"fmt"
 	"github.com/0magnet/calvin"
+	"github.com/0magnet/calvin/clihelp"
 	"github.com/spf13/cobra"
 	"os"
 	"strings"
@@ -14,7 +15,7 @@ import (
 var RootCmd = &cobra.Command{
 	Use:   "calvin",
 	Short: "generate calvin ascii font from text",
-	Long:  calvin.AsciiFont("calvin") + "\ngenerate calvin ascii font from text",
+	Long:  "generate calvin ascii font from text",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		var input string
 
@@ -47,4 +48,12 @@ var RootCmd = &cobra.Command{
 		fmt.Println(output)
 		return nil
 	},
+}
+
+// The command tree styles itself rather than waiting for main to do it, so the
+// banner is on RootCmd.Long for anything that reads it — the tests here among
+// them — and not only once a binary has been assembled around it.
+func init() {
+	RootCmd.SetHelpCommand(&cobra.Command{Hidden: true})
+	clihelp.Init(RootCmd, "calvin", true)
 }
