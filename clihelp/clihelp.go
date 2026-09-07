@@ -1,11 +1,18 @@
-// Package clihelp gives a cobra command the house help menu: the program's
+// Package clihelp gives a cobra command the house help menu: the program.s
 // name in calvin's ASCII font, the build it came from underneath, blue
 // coloring, and the two flags that print what the toolchain recorded.
 //
 // It exists because the same help menu was being written out per repo and
-// drifting. pisano carried a pkg/flags that had already lost the coloring and
-// the banner; the skywire tree it was copied from has both. One package that
-// every command calls keeps them the same by construction.
+// drifting. One package that every command calls keeps them the same by
+// construction.
+//
+// The help is rendered directly rather than through cobra's template, and that
+// is not a stylistic choice. A template reaches its data by reflection, and
+// TinyGo does not implement enough of reflect to run one — it panics part way
+// through, taking the shell down with it. Repos here that ship a TinyGo build
+// (chaosrack, dict, pisano, tinygo-stuff, tuiwasm) would have had a --help that
+// killed the terminal. Writing the screen out means one renderer, the same
+// output on every host, and no reflection anywhere. See help.go.
 //
 // Everything it reports comes from runtime/debug.BuildInfo, which the Go
 // toolchain fills in on its own. Nothing here is injected with -ldflags: a
@@ -18,7 +25,6 @@ import (
 	"runtime/debug"
 	"strings"
 
-	cc "github.com/0magnet/coloredcobra"
 	"github.com/spf13/cobra"
 
 	"github.com/0magnet/calvin"
@@ -117,7 +123,7 @@ func BannerWith(name, text string) string {
 }
 
 // Init gives cmd the house style: the banner above whatever Long it already
-// had, the blue coloring, the shared templates, and the -b/-d flags. Call it on
+// had, the blue coloring, the renderer, and the -b/-d flags. Call it on
 // the root command after its subcommands are attached, since the templates are
 // inherited through the parent chain and the flags are only meaningful at the
 // root.
@@ -137,28 +143,18 @@ func Init(cmd *cobra.Command, name string, usage bool) {
 	InitFlags(cmd)
 }
 
-// InitStyle applies the templates and coloring without touching Long or the
-// flags. Use it for a subcommand root that already inherits both.
+// InitStyle installs the renderer without touching Long or the flags. Use it
+// for a subcommand root that already inherits both.
+//
+// cobra looks up HelpFunc and UsageFunc through the parent chain, so setting
+// them on the root covers every subcommand.
 func InitStyle(cmd *cobra.Command, usage bool) {
-	if usage {
-		cmd.SetUsageTemplate(helpUsage)
-	} else {
-		cmd.SetUsageTemplate(help)
-		cmd.SetHelpTemplate(helpTemplateNoUsage)
-	}
-	// The templates have to be set before cc.Init, which colorizes whatever
-	// templates the command is holding.
-	cc.Init(&cc.Config{
-		RootCmd:         cmd,
-		Headings:        cc.HiBlue + cc.Bold,
-		Commands:        cc.HiBlue + cc.Bold,
-		CmdShortDescr:   cc.HiBlue,
-		Example:         cc.HiBlue + cc.Italic,
-		ExecName:        cc.HiBlue + cc.Bold,
-		Flags:           cc.HiBlue + cc.Bold,
-		FlagsDescr:      cc.HiBlue,
-		NoExtraNewlines: true,
-		NoBottomNewline: true,
+	cmd.SetHelpFunc(func(c *cobra.Command, _ []string) {
+		writeHelp(c.OutOrStdout(), c, usage)
+	})
+	cmd.SetUsageFunc(func(c *cobra.Command) error {
+		writeUsage(c.OutOrStderr(), c, true)
+		return nil
 	})
 }
 
