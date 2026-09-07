@@ -154,3 +154,40 @@ func TestInitSetsBannerWhenLongIsEmpty(t *testing.T) {
 		t.Errorf("no banner set:\n%s", cmd.Long)
 	}
 }
+
+// A command that already spends -d keeps it; clihelp gives up the letter
+// rather than panicking, and --info still works.
+func TestFlagShorthandCollisionIsSurvivable(t *testing.T) {
+	cmd := &cobra.Command{Use: "thing", Run: func(*cobra.Command, []string) {}}
+	var define bool
+	cmd.Flags().BoolVarP(&define, "define", "d", false, "print a definition")
+
+	Init(cmd, "thing", false) // must not panic
+
+	if f := cmd.Flags().ShorthandLookup("d"); f == nil || f.Name != "define" {
+		t.Error("-d was taken away from the command that had it")
+	}
+	if cmd.Flags().Lookup("info") == nil {
+		t.Error("--info was not registered at all")
+	}
+	var out bytes.Buffer
+	cmd.SetOut(&out)
+	cmd.SetArgs([]string{"--info"})
+	if err := cmd.Execute(); err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(out.String(), "mod\t") && !strings.Contains(out.String(), "go\t") {
+		t.Errorf("--info printed nothing useful:\n%s", out.String())
+	}
+}
+
+// A command defining its own --info keeps it untouched.
+func TestExistingLongFlagIsNotRedefined(t *testing.T) {
+	cmd := &cobra.Command{Use: "thing", Run: func(*cobra.Command, []string) {}}
+	var info string
+	cmd.Flags().StringVar(&info, "info", "", "something else entirely")
+	Init(cmd, "thing", false)
+	if f := cmd.Flags().Lookup("info"); f == nil || f.Value.Type() != "string" {
+		t.Error("clihelp redefined a flag the command already owned")
+	}
+}
