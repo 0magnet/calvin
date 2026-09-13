@@ -5,6 +5,25 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ctext x='1' y='12' font-family='monospace' font-size='12' fill='%238ae234'%3E%E2%95%A6%E2%95%A6%3C/text%3E%3C/svg%3E">
 <title>calvin — text into the Calvin S font</title>
+<!-- seo:begin -->
+<meta name="description" content="Convert text to the Calvin S box-drawing font and to BlackboardBold, live in the browser. A Go take on the ASCII-art text generator, usable as a command-line tool or a library.">
+<meta name="author" content="0magnet">
+<link rel="canonical" href="https://calvin.magnetosphere.net/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="magnetosphere">
+<meta property="og:title" content="calvin — text to the Calvin S box-drawing font">
+<meta property="og:description" content="Convert text to the Calvin S box-drawing font and to BlackboardBold, live in the browser. A Go take on the ASCII-art text generator, usable as a command-line tool or a library.">
+<meta property="og:url" content="https://calvin.magnetosphere.net/">
+<meta property="og:image" content="https://calvin.magnetosphere.net/calvin-demo.png">
+<meta property="og:image:alt" content="Text converted live to the Calvin S box-drawing font and to BlackboardBold">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="calvin — text to the Calvin S box-drawing font">
+<meta name="twitter:description" content="Convert text to the Calvin S box-drawing font and to BlackboardBold, live in the browser. A Go take on the ASCII-art text generator, usable as a command-line tool or a library.">
+<meta name="twitter:image" content="https://calvin.magnetosphere.net/calvin-demo.png">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebApplication","applicationCategory":"UtilityApplication","author":{"@type":"Person","name":"0magnet"},"browserRequirements":"Requires WebAssembly","description":"Convert text to the Calvin S box-drawing font and to BlackboardBold, live in the browser. A Go take on the ASCII-art text generator, usable as a command-line tool or a library.","image":"https://calvin.magnetosphere.net/calvin-demo.png","isAccessibleForFree":true,"name":"calvin — text to the Calvin S box-drawing font","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"operatingSystem":"Any (modern web browser)","sameAs":"https://github.com/0magnet/calvin","url":"https://calvin.magnetosphere.net/"}
+</script>
+<!-- seo:end -->
 <style>
   html, body { margin: 0; min-height: 100%; background: #10131a; color: #d3d7cf; }
   body { font: 14px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;
@@ -26,6 +45,14 @@
 </style>
 </head>
 <body>
+<!-- seo:begin -->
+<div style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">
+<h1>calvin — text in the Calvin S box-drawing font</h1>
+<p>Calvin S is a box-drawing alphabet built from Unicode line characters, the kind a text-art generator renders banner text in. This converts any text into it, and into BlackboardBold, as you type.</p>
+<p>The same converter is a Go library and a command-line filter — echo &#34;Hello, World!&#34; | calvin — so it can label terminal output, README headings or commit messages. This page is it compiled to WebAssembly.</p>
+<p>Source code: <a href="https://github.com/0magnet/calvin">github.com/0magnet/calvin</a>. More Go and WebAssembly projects: <a href="https://magnetosphere.net/software">magnetosphere.net/software</a>.</p>
+</div>
+<!-- seo:end -->
 <input id="in" value="calvin" spellcheck="false" autocomplete="off" aria-label="text to convert">
 <h2>AsciiFont — Calvin S</h2>
 <pre id="box"><span id="boot">loading…</span></pre>
