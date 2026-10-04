@@ -3,6 +3,7 @@ package commands
 import (
 	"io"
 	"os"
+	"runtime"
 	"strings"
 	"testing"
 
@@ -14,6 +15,9 @@ import (
 // character device, which is what the command uses to tell a pipe from a tty.
 func run(t *testing.T, stdin []byte, args ...string) (string, error) {
 	t.Helper()
+	if runtime.GOOS == "js" {
+		t.Skip("os.Pipe is not implemented on js")
+	}
 
 	realIn, realOut := os.Stdin, os.Stdout
 	t.Cleanup(func() { os.Stdin, os.Stdout = realIn, realOut })
