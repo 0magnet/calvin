@@ -5,6 +5,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 )
 
@@ -33,6 +34,10 @@ func tree(t *testing.T) *cobra.Command {
 	sub.Flags().Bool("far", false, "go further")
 	sub.Flags().IntP("count", "n", 3, "how many")
 	root.AddCommand(sub, &cobra.Command{Use: "sit", Short: "sits", Run: func(*cobra.Command, []string) {}})
+
+	// The tests compare plain text; a js host that exports TERM would otherwise
+	// switch color on.
+	color.NoColor = true
 
 	// Init sets the banner, the coloring and the flags together.
 	Init(root, "prog")

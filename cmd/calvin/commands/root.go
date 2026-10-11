@@ -16,6 +16,8 @@ var RootCmd = &cobra.Command{
 	Use:   "calvin",
 	Short: "generate calvin ascii font from text",
 	Long:  "generate calvin ascii font from text",
+	// Arbitrary args are the text to render; "serve" is the only subcommand.
+	Args: cobra.ArbitraryArgs,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		var input string
 
@@ -54,6 +56,7 @@ var RootCmd = &cobra.Command{
 // banner is on RootCmd.Long for anything that reads it — the tests here among
 // them — and not only once a binary has been assembled around it.
 func init() {
+	RootCmd.AddCommand(serveCmd())
 	RootCmd.SetHelpCommand(&cobra.Command{Hidden: true})
 	clihelp.Init(RootCmd, "calvin")
 }
