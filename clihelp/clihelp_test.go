@@ -55,7 +55,7 @@ func TestBannerWithAppendsProse(t *testing.T) {
 func TestInitKeepsExistingRun(t *testing.T) {
 	ran := false
 	cmd := &cobra.Command{Use: "thing", Run: func(*cobra.Command, []string) { ran = true }}
-	Init(cmd, "thing", false)
+	Init(cmd, "thing")
 
 	cmd.SetArgs(nil)
 	cmd.SetOut(&bytes.Buffer{})
@@ -69,7 +69,7 @@ func TestInitKeepsExistingRun(t *testing.T) {
 
 func TestVersionFlagPrintsVersion(t *testing.T) {
 	cmd := &cobra.Command{Use: "thing", Run: func(*cobra.Command, []string) {}}
-	Init(cmd, "thing", false)
+	Init(cmd, "thing")
 
 	var out bytes.Buffer
 	cmd.SetOut(&out)
@@ -84,7 +84,7 @@ func TestVersionFlagPrintsVersion(t *testing.T) {
 
 func TestInfoFlagPrintsBuildInfo(t *testing.T) {
 	cmd := &cobra.Command{Use: "thing", Run: func(*cobra.Command, []string) {}}
-	Init(cmd, "thing", false)
+	Init(cmd, "thing")
 
 	var out bytes.Buffer
 	cmd.SetOut(&out)
@@ -104,7 +104,7 @@ func TestRunlessCommandShowsHelp(t *testing.T) {
 	// The subcommand needs a Run: cobra.IsAvailableCommand excludes one that is
 	// neither runnable nor a parent, and the template filters on it.
 	cmd.AddCommand(&cobra.Command{Use: "sub", Short: "a subcommand", Run: func(*cobra.Command, []string) {}})
-	Init(cmd, "thing", false)
+	Init(cmd, "thing")
 
 	var out bytes.Buffer
 	cmd.SetOut(&out)
@@ -121,7 +121,7 @@ func TestRunlessCommandShowsHelp(t *testing.T) {
 // for help, not so it can describe itself.
 func TestHelpFlagIsHidden(t *testing.T) {
 	cmd := &cobra.Command{Use: "thing", Run: func(*cobra.Command, []string) {}}
-	Init(cmd, "thing", false)
+	Init(cmd, "thing")
 	f := cmd.PersistentFlags().Lookup("help")
 	if f == nil {
 		t.Fatal("no --help flag installed")
@@ -135,7 +135,7 @@ func TestHelpFlagIsHidden(t *testing.T) {
 // goes above it rather than over it.
 func TestInitKeepsExistingLong(t *testing.T) {
 	cmd := &cobra.Command{Use: "thing", Long: "the prose that was already here"}
-	Init(cmd, "thing", false)
+	Init(cmd, "thing")
 	if !strings.Contains(cmd.Long, "the prose that was already here") {
 		t.Errorf("Init discarded the existing Long:\n%s", cmd.Long)
 	}
@@ -149,7 +149,7 @@ func TestInitKeepsExistingLong(t *testing.T) {
 
 func TestInitSetsBannerWhenLongIsEmpty(t *testing.T) {
 	cmd := &cobra.Command{Use: "thing"}
-	Init(cmd, "thing", false)
+	Init(cmd, "thing")
 	if !strings.Contains(cmd.Long, "built with go") {
 		t.Errorf("no banner set:\n%s", cmd.Long)
 	}
@@ -162,7 +162,7 @@ func TestFlagShorthandCollisionIsSurvivable(t *testing.T) {
 	var define bool
 	cmd.Flags().BoolVarP(&define, "define", "d", false, "print a definition")
 
-	Init(cmd, "thing", false) // must not panic
+	Init(cmd, "thing") // must not panic
 
 	if f := cmd.Flags().ShorthandLookup("d"); f == nil || f.Name != "define" {
 		t.Error("-d was taken away from the command that had it")
@@ -186,7 +186,7 @@ func TestExistingLongFlagIsNotRedefined(t *testing.T) {
 	cmd := &cobra.Command{Use: "thing", Run: func(*cobra.Command, []string) {}}
 	var info string
 	cmd.Flags().StringVar(&info, "info", "", "something else entirely")
-	Init(cmd, "thing", false)
+	Init(cmd, "thing")
 	if f := cmd.Flags().Lookup("info"); f == nil || f.Value.Type() != "string" {
 		t.Error("clihelp redefined a flag the command already owned")
 	}

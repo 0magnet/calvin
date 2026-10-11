@@ -55,5 +55,5 @@ var RootCmd = &cobra.Command{
 // them — and not only once a binary has been assembled around it.
 func init() {
 	RootCmd.SetHelpCommand(&cobra.Command{Hidden: true})
-	clihelp.Init(RootCmd, "calvin", true)
+	clihelp.Init(RootCmd, "calvin")
 }
