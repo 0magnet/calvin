@@ -3,7 +3,7 @@ module github.com/0magnet/calvin
 go 1.26.0
 
 require (
-	github.com/0magnet/coloredcobra v1.0.4-0.20261011230509-d5385cf44398
+	github.com/0magnet/coloredcobra v1.0.4-0.20261012213101-faa6bd8f94c5
 	github.com/fatih/color v1.19.0
 	github.com/spf13/cobra v1.10.2
 )
