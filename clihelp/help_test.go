@@ -2,6 +2,7 @@ package clihelp
 
 import (
 	"bytes"
+	"regexp"
 	"strings"
 	"testing"
 
@@ -70,13 +71,21 @@ func TestHelpHasEverySection(t *testing.T) {
 		"Aliases:\n  walk, step\n",
 		"Examples:\n  prog walk --far\n",
 		"Flags:\n",
-		"  -n, --count int   how many (default 3)\n",
-		"      --far         go further\n",
 		"Global Flags:\n",
-		"      --verbose   say more\n",
 	} {
 		if !strings.Contains(got, want) {
 			t.Errorf("missing %q in:\n%s", want, got)
+		}
+	}
+	// Flag lines are pflag's: it pads them to the longest, and since v1.1.0
+	// writes a bool flag as --far[=true|false].
+	for _, want := range []string{
+		`(?m)^  -n, --count int +how many \(default 3\)$`,
+		`(?m)^      --far(\[=true\|false\])? +go further$`,
+		`(?m)^      --verbose(\[=true\|false\])? +say more$`,
+	} {
+		if !regexp.MustCompile(want).MatchString(got) {
+			t.Errorf("no line matching %q in:\n%s", want, got)
 		}
 	}
 	if strings.Contains(got, "\n\n\n") {
