@@ -19,6 +19,7 @@ jobs:
       # back to the js/wasm tests under Node where nothing builds for the host,
       # which is the whole of some of these repos.
       - run: make test
+      - run: make check-names check-inits
 
   lint:
     runs-on: ubuntu-latest
